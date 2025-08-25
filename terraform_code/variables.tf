@@ -4,7 +4,7 @@ variable "project_id" {
 variable "region" {
   
 }
-variable "project_name" {
+variable "projects" {
   
 }
 variable "project_name" {
