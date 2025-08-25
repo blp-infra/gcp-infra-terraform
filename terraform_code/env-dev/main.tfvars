@@ -1,3 +1,7 @@
 project_id="zeta-flare-449207-r0"
 region="asia-south1-c"
 af_region="asia-south1"
+project_name="new_project_test"
+project_id="new-project-test-0123-r0"
+organization_id="test"
+billing_account = ""
