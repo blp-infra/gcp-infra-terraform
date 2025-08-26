@@ -5,7 +5,7 @@ projects={
   project1={    
             name= "new_project_test"
             project_id="new-project-test-0123-r0"
-            organization_id="test"
+            # organization_id="test"
             billing_account = ""
           },
 }
