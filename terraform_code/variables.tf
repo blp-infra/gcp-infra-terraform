@@ -7,9 +7,9 @@ variable "region" {
 variable "projects" {
   
 }
-variable "project_name" {
+# variable "project_name" {
   
-}
+# }
 # variable "organization_id" {
   
 # }
