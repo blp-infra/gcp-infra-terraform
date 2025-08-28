@@ -16,3 +16,9 @@ variable "projects" {
 variable "billing_account" {
   
 }
+variable "cidr" {
+  
+}
+variable "af_region" {
+  
+}
