@@ -6,5 +6,5 @@ resource "google_compute_firewall" "allow_ssh" {
     ports         = ["22"]
   }
   priority        =  1000
-  source_ranges   = ["0.0.0.0/0 "]
+  source_ranges   = ["0.0.0.0/0"]
 }
