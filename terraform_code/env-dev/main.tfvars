@@ -12,3 +12,15 @@ projects={
             # # cant create project unless organizational level permission
           },
 }
+
+compute_engine={
+  gitlab-ci={
+      machine_type = "e2-standard-4",
+      zone         = "asia-south1-c",
+      image        =  "ubuntu-os-cloud/ubuntu-2404-lts"
+      disk_size    = "20"
+      disk_type    = "pd-ssd"
+      
+      
+  }
+}

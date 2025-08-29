@@ -1,0 +1,13 @@
+#!/bin/bash
+# 
+# this is startup script to run on compute engine to configure the virtual machine
+# #!/bin/bash
+touch /var/log/startup.log
+export LOG_FILE="/var/log/startup.log"
+echo "Starting application: ${app_name}" > $LOG_FILE
+apt-get update -y
+# install ansible
+apt install software-properties-common > > $LOG_FILE
+add-apt-repository --yes --update ppa:ansible/ansible  > $LOG_FILE
+apt install ansible  > $LOG_FILE
+
