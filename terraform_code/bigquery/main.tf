@@ -12,9 +12,10 @@ resource "google_bigquery_dataset" "bigquery" {
 }
 
 resource "google_bigquery_table" "bq_table" {
-  dataset_id = google_bigquery_dataset.bigquery.dataset_id
-  table_id   = "temperature_data"
-  project    = var.project_id 
+  dataset_id          = google_bigquery_dataset.bigquery.dataset_id
+  table_id            = "temperature_data"
+  project             = var.project_id 
+  deletion_protection = false
 
   time_partitioning {
     type = "DAY"
@@ -26,7 +27,5 @@ resource "google_bigquery_table" "bq_table" {
   }
 
 schema = file("${path.module}/schema.json")
-
-
 }
 
