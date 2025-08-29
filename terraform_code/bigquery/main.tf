@@ -1,5 +1,5 @@
 resource "google_bigquery_dataset" "bigquery" {
-  dataset_id                  = "sensor_data_${var.project_id}_bqds"
+  dataset_id                  = "sensor_data"
   description                 = "This is bigquery used for project ${var.project_id}"
   location                    = "asia-south1"
   # default_table_expiration_ms = 3600000
@@ -13,7 +13,7 @@ resource "google_bigquery_dataset" "bigquery" {
 
 resource "google_bigquery_table" "bq_table" {
   dataset_id = google_bigquery_dataset.bigquery.dataset_id
-  table_id   = "temperature_${var.project_id}_tbl"
+  table_id   = "temperature_data"
   project    = var.project_id 
 
   time_partitioning {
