@@ -23,10 +23,11 @@
 #   disk_size       = each.value["disk_size"]
 #   project_id      = var.project_id
 # }
-# module "cloudrun" {
-#   source = "./cloudrun"
-# }
-module "bigquery" {
-  source = "./bigquery"
-  project_id = var.project_id
+module "cloudrun" {
+  source     = "./cloudrun"
+  region     = var.af_region
 }
+# module "bigquery" {
+#   source = "./bigquery"
+#   project_id = var.project_id
+# }
