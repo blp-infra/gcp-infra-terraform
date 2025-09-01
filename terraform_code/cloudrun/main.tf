@@ -4,7 +4,7 @@ resource "google_cloud_run_service" "default" {
 
   template {
     spec {
-      # service_account_name = "jenkins-server@zeta-flare-449207-r0.iam.gserviceaccount.com"
+      service_account_name = "jenkins-server@zeta-flare-449207-r0.iam.gserviceaccount.com"
       containers {
         image = "asia-south1-docker.pkg.dev/zeta-flare-449207-r0/docker-repo/myapp:v1.0"
         # resources {
