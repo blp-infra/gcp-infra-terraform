@@ -15,7 +15,7 @@ resource "google_bigquery_table" "bq_table" {
   dataset_id          = google_bigquery_dataset.bigquery.dataset_id
   table_id            = "temperature_data"
   project             = var.project_id 
-  deletion_protection = false
+  deletion_protection = false #can true if need to be delete protected
 
   time_partitioning {
     type = "DAY"
