@@ -2,6 +2,7 @@ project_id="zeta-flare-449207-r0"
 region="asia-south1-c"
 af_region="asia-south1"
 cidr="10.2.0.0/16"
+file_path="/home/workstation/.ansible/secrets/service_account.json"
 projects={
   project1={    
             name= "newProject-007"#lovercase uppercase - number

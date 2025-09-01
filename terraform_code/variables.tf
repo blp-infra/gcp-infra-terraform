@@ -25,3 +25,6 @@ variable "af_region" {
 variable "compute_engine" {
   
 }
+variable "file_path" {
+  
+}
