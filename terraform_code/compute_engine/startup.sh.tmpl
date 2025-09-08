@@ -2,12 +2,30 @@
 # 
 # this is startup script to run on compute engine to configure the virtual machine
 # #!/bin/bash
+#   installing rsyslog
+dnf install -y rsyslog 
+systemctl enable rsyslog
+systemctl start rsyslog 
+
+# cretate startup log file
 touch /var/log/startup.log
 export LOG_FILE="/var/log/startup.log"
-echo "Starting application: ${app_name}" > $LOG_FILE
-apt-get update -y
-# install ansible
-apt install software-properties-common > > $LOG_FILE
-add-apt-repository --yes --update ppa:ansible/ansible  > $LOG_FILE
-apt install ansible  > $LOG_FILE
 
+echo "Starting application by user: ${username}" 2>&1 | tee -a $LOG_FILE
+dnf update -y 2>&1 | tee -a $LOG_FILE
+# configuring ssh daemon
+sed -i 's/^#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config 2>&1 | tee -a $LOG_FILE
+
+systemctl restart sshd 2>&1 | tee -a $LOG_FILE
+systemctl enable sshd 2>&1 | tee -a $LOG_FILE
+# configure new user  to server 
+useradd -aG wheel ${username}
+chpasswd ${username} ${server_password}
+
+# install ansible
+dnf install install epel-release -y 2>&1 | tee -a $LOG_FILE
+dnf instll install ansible-core -y  2>&1 | tee -a $LOG_FILE
+
+
+
+ansible-pull -i localhost, -U https://github.com/blp-infra/gcp-infra-terraform  gcp-infra-terraform/ansible/playbook.yaml  -e ansible_user=${username} -e ansible_password=${server_password} -e role_name=${role_name} 2>&1 | tee -a $LOG_FILE
