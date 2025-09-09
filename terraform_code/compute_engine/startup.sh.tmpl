@@ -1,31 +1,49 @@
 #!/bin/bash
 # 
-# this is startup script to run on compute engine to configure the virtual machine
-# #!/bin/bash
-#   installing rsyslog
+# This is startup script to run on compute engine to configure the virtual machine
+#
+
+# Installing rsyslog
 dnf install -y rsyslog 
 systemctl enable rsyslog
 systemctl start rsyslog 
 
-# cretate startup log file
+# Create startup log file
 touch /var/log/startup.log
 export LOG_FILE="/var/log/startup.log"
+sudo chmod 666 $LOG_FILE
+
+# Fixed variable assignments (no spaces around =)
+export username="${username}"
+export server_password="${server_password}"
+export role_name="${role_name}"
 
 echo "Starting application by user: ${username}" 2>&1 | tee -a $LOG_FILE
 dnf update -y 2>&1 | tee -a $LOG_FILE
-# configuring ssh daemon
-sed -i 's/^#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config 2>&1 | tee -a $LOG_FILE
 
+# Configuring ssh daemon
+sed -i 's/^#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config 2>&1 | tee -a $LOG_FILE
+sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config 2>&1 | tee -a $LOG_FILE
+sed -i 's/^#UsePAM no/UsePAM yes/' /etc/ssh/sshd_config 2>&1 | tee -a $LOG_FILE
+sed -i 's/^UsePAM no/UsePAM yes/' /etc/ssh/sshd_config 2>&1 | tee -a $LOG_FILE
+
+echo "Restarting ssh daemon" 2>&1 | tee -a $LOG_FILE
 systemctl restart sshd 2>&1 | tee -a $LOG_FILE
 systemctl enable sshd 2>&1 | tee -a $LOG_FILE
-# configure new user  to server 
-useradd -aG wheel ${username}
-chpasswd ${username} ${server_password}
 
-# install ansible
-dnf install install epel-release -y 2>&1 | tee -a $LOG_FILE
-dnf instll install ansible-core -y  2>&1 | tee -a $LOG_FILE
+# Configure new user on server 
+sleep 30
+echo "Adding new user and password" 2>&1 | tee -a $LOG_FILE
+useradd -G wheel ${username} 2>&1 | tee -a $LOG_FILE
 
+# Fixed chpasswd syntax
+echo "${username}:${server_password}" | chpasswd 2>&1 | tee -a $LOG_FILE
 
+# Install ansible 
+sleep 30
+# Fixed typos in dnf install commands
+dnf install epel-release -y 2>&1 | tee -a $LOG_FILE
+dnf install ansible-core -y 2>&1 | tee -a $LOG_FILE
 
-ansible-pull -i localhost, -U https://github.com/blp-infra/gcp-infra-terraform  gcp-infra-terraform/ansible/playbook.yaml  -e ansible_user=${username} -e ansible_password=${server_password} -e role_name=${role_name} 2>&1 | tee -a $LOG_FILE
+# Run ansible-pull
+ansible-pull -i localhost, -U https://github.com/blp-infra/gcp-infra-terraform gcp-infra-terraform/ansible/playbook.yaml -e ansible_user=${username} -e ansible_password=${server_password} -e role_name=${role_name} 2>&1 | tee -a $LOG_FILE

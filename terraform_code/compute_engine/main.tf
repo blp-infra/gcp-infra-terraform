@@ -49,6 +49,7 @@ resource "google_compute_instance" "compute_engine" {
    metadata_startup_script = templatefile("${path.module}/startup.sh.tmpl", {
      user_name = local.username # send username variable to script
      password = local.password 
+     role_name = var.name
    })
 
   service_account {

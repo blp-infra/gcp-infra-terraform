@@ -1,0 +1,106 @@
+
+     
+
+- name: Download and copy repo
+  ansible.builtin.get_url:
+   url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+   dest: /etc/yum.repos.d/jenkins.repo
+   mode:  '0774'
+   
+- name: Copy  Jenkins key
+  ansible.builtin.shell: sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+  
+- name: Install Jenkins, fontconfig, openjdk
+  ansible.builtin.dnf:
+     name: 
+       - fontconfig 
+       - java-21-openjdk
+       - jenkins
+     state: present
+     
+- name: Create init.d directory
+  ansible.builtin.file: 
+    path: /var/lib/jenkins/init.groovy.d
+    state: directory 
+    owner: jenkins 
+    group: jenkins 
+
+
+
+
+
+
+- name: Install python3-pip on RedHat/CentOS/Fedora
+  ansible.builtin.dnf:
+    name: python3-pip
+    state: present
+    
+- name: Install collection  GCP community.
+  ansible.builtin.shell: ansible-galaxy collection install google.cloud
+
+- name: Install google-cloud-secret-manager Python package on control node
+  ansible.builtin.pip:
+    name: google-cloud-secret-manager
+    state: present
+    executable: pip3
+  run_once: true
+  
+- name: Check if Ansible can read the service account file
+  ansible.builtin.stat:
+    path: /opt/service_account.json
+  register: sa_file
+  
+- name: Show file permissions
+  debug:
+      var: sa_file.stat
+
+- name: Get secret value from GCP Secret Manager
+  google.cloud.gcp_secret_manager:
+    name: admin_user
+    project: 816983369694 #projectid 289923
+    state: present
+    version: latest
+    return_value: true
+    auth_kind: serviceaccount
+    service_account_file: "{{ sa_key_path }}"
+  register: username
+
+
+- name: Get secret value from GCP Secret Manager
+  google.cloud.gcp_secret_manager:
+    name: admin_password
+    project: 816983369694 #projectid 289923
+    state: present
+    version: latest
+    return_value: true
+    auth_kind: serviceaccount
+    service_account_file: "{{ sa_key_path }}"
+  register: password
+
+
+
+   
+
+- name: Copy Init groovy files 
+  ansible.builtin.template: 
+    src: "{{item}}.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/{{item}}.groovy
+    owner: jenkins 
+    group: jenkins 
+    mode: '0644'
+  loop: 
+    - 01-skip-unlock 
+    - 02-admin-user
+    - 03-plugins 
+    - 04-shared-library
+    - 05-setup-credentials
+    
+- name: Start Jenkins 
+  ansible.builtin.systemd_service: 
+    name: jenkins 
+    state: restarted 
+    enabled: yes
+    
+
+     
+  
