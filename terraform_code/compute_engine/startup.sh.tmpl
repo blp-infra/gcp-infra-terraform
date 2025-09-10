@@ -44,6 +44,6 @@ sleep 30
 # Fixed typos in dnf install commands
 dnf install epel-release -y 2>&1 | tee -a $LOG_FILE
 dnf install ansible-core -y 2>&1 | tee -a $LOG_FILE
-
+sleep 10
 # Run ansible-pull
 ansible-pull -i localhost, -U https://github.com/blp-infra/gcp-infra-terraform gcp-infra-terraform/ansible/playbook.yaml -e ansible_user=${username} -e ansible_password=${server_password} -e role_name=${role_name} 2>&1 | tee -a $LOG_FILE

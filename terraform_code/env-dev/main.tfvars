@@ -15,18 +15,18 @@ projects={
 }
 
 compute_engine={
-  # gitlab-ci={
+  gitlab-ci={
+      machine_type = "e2-standard-4",
+      zone         = "asia-south1-c",
+      image        =  "centos-stream-10"
+      disk_size    = "50"
+      disk_type    = "pd-ssd"
+  },
+  # jenkins={
   #     machine_type = "e2-standard-4",
   #     zone         = "asia-south1-c",
   #     image        =  "centos-stream-9"
   #     disk_size    = "20"
   #     disk_type    = "pd-ssd"
-  # },
-  jenkins={
-      machine_type = "e2-standard-4",
-      zone         = "asia-south1-c",
-      image        =  "centos-stream-9"
-      disk_size    = "20"
-      disk_type    = "pd-ssd"
-  }
+  # }
 }
