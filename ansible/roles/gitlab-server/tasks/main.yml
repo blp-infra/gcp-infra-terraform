@@ -1,0 +1,79 @@
+- name: Configuring prompt
+  ansible.builtin.lineinfile: 
+     path: ~/.bashrc
+     line: export PS1="\[\e[1;31m\]\u\[\e[0m\]@\[\e[1;34m\]{{ role_name }}\[\e[0m\] \w \$"
+     state: present
+     create: true
+
+- name: Install required packages
+  ansible.builtin.dnf:
+     name: 
+       - curl
+       - firewalld
+       - policycoreutils-python-utils
+     state: present
+
+- name: Start and enable firewalld
+  ansible.builtin.systemd_service: 
+    name: firewalld 
+    state: started
+    enabled: true
+
+- name: Configure firewall for GitLab services
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+    immediate: true
+  loop:
+    - http
+    - https
+    - ssh
+
+- name: Add GitLab CE repository
+  ansible.builtin.shell: | 
+     curl -fsSL "https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh" | sudo bash
+  args:
+    creates: /etc/yum.repos.d/gitlab_gitlab-ce.repo
+
+- name: Add GitLab Runner repository 
+  ansible.builtin.shell: |
+     curl -fsSL "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh" | sudo bash
+  args:
+    creates: /etc/yum.repos.d/runner_gitlab-runner.repo
+
+- name: Install GitLab Community Edition
+  ansible.builtin.dnf: 
+     name: gitlab-ce 
+     state: present
+
+- name: Install GitLab Runner
+  ansible.builtin.dnf:
+     name: gitlab-runner
+     state: present
+
+- name: Configure GitLab external URL (optional)
+  ansible.builtin.lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^external_url"
+    line: "external_url 'http://{{ ansible_default_ipv4.address }}'"
+    backup: yes
+  notify: reconfigure gitlab
+
+- name: Initial GitLab configuration
+  ansible.builtin.command: gitlab-ctl reconfigure
+  args:
+    creates: /var/opt/gitlab/bootstrapped
+
+- name: Start and enable GitLab services
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - gitlab-runsvdir
+
+# Handlers
+# handlers:
+- name: reconfigure gitlab
+  ansible.builtin.command: gitlab-ctl reconfigure
