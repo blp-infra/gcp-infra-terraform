@@ -1,0 +1,23 @@
+- name: Configuring prompt
+  ansible.builtin.lineinfile: 
+     path: ~/.bashrc
+     line: export PS1="\[\e[1;31m\]\u\[\e[0m\]@\[\e[1;34m\]{{ role_name }}\[\e[0m\] \w \$"
+     state: present
+     create: true
+
+- name: Install Postgres repo 
+  ansible.builtin.shell: |
+    sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    
+    
+- name:  Install Postgres
+  ansible.builtin.dnf: 
+     name:  postgresql17-server
+     state: latest
+     
+
+
+
+# sudo /usr/pgsql-17/bin/postgresql-17-setup initdb
+# sudo systemctl enable postgresql-17
+# sudo systemctl start postgresql-17

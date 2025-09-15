@@ -29,6 +29,13 @@ compute_engine={
       disk_size    = "20"
       disk_type    = "pd-ssd"
   },
+  psql-server={
+      machine_type = "e2-standard-4", # change standard 4gbram
+      zone         = "asia-south1-c",
+      image        =  "centos-stream-10"
+      disk_size    = "20"
+      disk_type    = "pd-ssd"
+  },
   # jenkins-server={
   #     machine_type = "e2-standard-4",
   #     zone         = "asia-south1-c",
